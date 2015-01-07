@@ -16,6 +16,7 @@ Referer to http://couchdb.apache.org for more information and supported features
 # Installation 
 
 For beta connectors you can download the source code.
+
 ## Source code installation: 
 
 1) Add devkit to Anypoint Studio
@@ -24,7 +25,14 @@ For beta connectors you can download the source code.
 4) Restart studio when asked
 5) Use in your flows
 
-## Production and usage of connector in standalone Mule ESB
+## Update site installation:
+
+1) Download update site from releases.
+2) Open Help -> Install new software and specify update site to install in studio
+3) Restart studio
+4) Use in your flows
+
+## Usage in standalone Mule ESB
 
 Take connector ZIP from releases and put into plugins directory in mule-standalone.
 
