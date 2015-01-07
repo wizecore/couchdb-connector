@@ -4,9 +4,13 @@
  */
 package org.mule.modules.couchdb;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.lightcouch.CouchDbClient;
+import org.lightcouch.NoDocumentException;
 import org.lightcouch.Response;
 import org.mule.api.ConnectionException;
 import org.mule.api.ConnectionExceptionCode;
@@ -127,31 +131,95 @@ public class CouchDBConnector
     }
     
     /**
-     * Saves content to CouchDB. If content starts with { assume it JSON and parse it.
+     * Looks for object by specified id. If found, returns JSON, if not returns <code>defaultValue</code> JSON enriched with specified ID.
+     * So one can use flow findById -> save without additional steps.
+     * 
+     * {@sample.xml ../../../doc/couchdb-connector.xml.sample couchdb:findById}
+     * 
+     * @param idValue CouchDB id to search for.
+     * @param defaultValue Default value to return.
+     * @return Object JSON
+     */
+    @Processor
+    public String findById(String idValue, @Optional String defaultValue) {	
+    	if (client.contains(idValue)) {
+    		JsonObject o = client.find(JsonObject.class, idValue);
+    		return client.getGson().toJson(o);
+    	} else {
+    		JsonObject o = client.getGson().fromJson(defaultValue, JsonObject.class);
+    		o.addProperty("_id", idValue);
+    		return client.getGson().toJson(o);
+    	}
+    }
+    
+    /**
+     * Save or updates object in CouchDB. If content starts with { assume it JSON and parse it.
      * If other cases saves it as content property of document.
+     * 
+     * If JSON contains _id it is interpreted as ID of document and will be updated.
      *
      * {@sample.xml ../../../doc/couchdb-connector.xml.sample couchdb:save}
      *
      * @param content Content to be processed
-     * @return ID saved
+     * @param idValue Optional ID. If not specified, will be looked inside JSON.
+     * @param propertyName Property to set if not a JSON. Default is <code>content</code>.
+     * @return ID of saved object
+     * @throws IOException If error occurs during operation
      */
     @Processor
-    public String save(String content) {
+    public String save(@Optional String content, @Optional String idValue, @Optional String propertyName) throws IOException {
+    	if (propertyName == null || propertyName.trim().equals("")) {
+    		propertyName = "content";
+    	}
+    	
+    	if (idValue == null || idValue.trim().equals("")) {
+    		idValue = null;
+    	}
+    	
     	if (content != null) {
     		if (content.startsWith("{")) {
     			JsonObject json = client.getGson().fromJson(content, JsonObject.class);
-    			Response r = client.save(json);
-    			return r.getId();
+    			if (json.has("_id")) {
+    				idValue = json.get("_id").getAsString();
+    			}
+    		
+    			if (idValue != null && !idValue.trim().equals("") && client.contains(idValue)) {
+					Response r = client.update(json);
+					checkResponse(r);
+					return r.getId();
+    			} else {
+	    			Response r = client.save(json);
+	    			checkResponse(r);
+	    			return r.getId();
+    			}
     		} else {
     			HashMap<String, String> m = new HashMap<String, String>();
-    			m.put("content", content);
-    			Response r = client.save(m);
-    			return r.getId();
+    			m.put(propertyName, content);
+    			
+    			if (idValue != null) {
+    				m.put("_id", idValue);
+    			}
+    			
+    			if (idValue != null && client.contains(idValue)) {
+					Response r = client.update(m);
+					checkResponse(r);
+					return r.getId();
+    			} else {
+	    			Response r = client.save(m);
+	    			checkResponse(r);
+	    			return r.getId();
+    			}
     		}
     	} else {
     		throw new NullPointerException("content");
     	}
     }
+
+	private void checkResponse(Response r) throws IOException {
+		if (r.getError() != null && r.getError().equals("")) {
+			throw new IOException("CouchDB error: " + r.getError());
+		}
+	}
 
 	public String getHostname() {
 		return hostname;

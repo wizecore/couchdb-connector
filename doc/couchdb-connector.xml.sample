@@ -1,3 +1,7 @@
 <!-- BEGIN_INCLUDE(couchdb:save) -->
-    <couchdb:save content="#[map-payload:content]" />
+    <couchdb:save content="#[map-payload:content]" idValue="6fd613e5591248189fff9fa57417f32a" />
 <!-- END_INCLUDE(couchdb:save) -->
+
+<!-- BEGIN_INCLUDE(couchdb:findById) -->
+    <couchdb:findById idValue="6fd613e5591248189fff9fa57417f32a" defaultValue="{ empty-object: 1 }" />
+<!-- END_INCLUDE(couchdb:findById) -->

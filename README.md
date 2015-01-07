@@ -1,34 +1,36 @@
 # CouchDB Anypoint Connector
 
-[Connector description including destination service or application with]
+Allows query operations in CouchDB.
 
 # Mule supported versions
-Examples:
-Mule 3.4.x, 3.5.x
-Mule 3.4.1
+Mule 3.5.X CE / EE
 
-# [Destination service or application name] supported versions
-Example:
-Oracle E-Business Suite 12.1 and above.
-
-#Service or application supported modules
-Example:
-Oracle CRM
-Oracle Financials
-or 
-Salesforce API v.24
-Salesforce Metadata API
-
+# CouchDB supported versions
+Any version will do, starting with 1.0. Referer to http://couchdb.apache.org for more information.
 
 # Installation 
-For beta connectors you can download the source code and build it with devkit to find it available on your local repository. Then you can add it to Studio…<TBD>
 
-For released connectors you can download them from the update site in Studio. 
-Open MuleStudio, go to Help → Install New Software and select MuleStudio Cloud Connectors Update Site where you’ll find all avaliable connectors.
+For beta connectors you can download the source code.
+## Source code installation: 
+
+1) Add devkit to Anypoint Studio
+2) Add project to Anypoint studio
+3) Right click on project, Anypoint Connector -> Install or update
+4) If no error occurs
+
+## Production and usage of connector in standalone Mule ESB
+
+FIXME: NO information about it.
 
 #Usage
-For information about usage our documentation at http://github.com/wizecore/couchdb.
+
+Consult documentation bundled with plugin.
+See doc/ folder or live at https://github.com/wizecore/couchdb-connector/tree/master/doc.
 
 # Reporting Issues
 
-We use GitHub:Issues for tracking issues with this connector. You can report new issues at this link http://github.com/wizecore/couchdb/issues.
+We use GitHub Issues for tracking issues with this connector. 
+
+You can report new issues at this link https://github.com/wizecore/couchdb-connector/issues.
+
+(C) 2014-2015 Wizecore.
