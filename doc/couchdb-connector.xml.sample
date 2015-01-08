@@ -3,5 +3,18 @@
 <!-- END_INCLUDE(couchdb:save) -->
 
 <!-- BEGIN_INCLUDE(couchdb:findById) -->
-    <couchdb:findById idValue="6fd613e5591248189fff9fa57417f32a" defaultValue="{ empty-object: 1 }" />
+    <couchdb:findById idValue="6fd613e5591248189fff9fa57417f32a" defaultValue="{ empty: 1 }" />
 <!-- END_INCLUDE(couchdb:findById) -->
+
+<!-- BEGIN_INCLUDE(couchdb:listView) -->
+    <couchdb:listView viewName="design/view" keyValue="" startKey="" endKey="" limit="10" />
+<!-- END_INCLUDE(couchdb:listView) -->
+
+<!-- BEGIN_INCLUDE(couchdb:findByKey) -->
+    <couchdb:findByKey viewName="design/view" keyValue="my.unique.key" defaultValue="{ empty: 1 }" />
+<!-- END_INCLUDE(couchdb:findByKey) -->
+
+<!-- BEGIN_INCLUDE(couchdb:remove) -->
+    <couchdb:remove document="{ _id: '6fd613e5591248189fff9fa57417f32a' }" idValue="08e2e256f0afa9050b5fbbfbc8000b52" revision="1-a554bc9c54ecb538684d02b3e8afbdd9" />
+<!-- END_INCLUDE(couchdb:remove) -->
+

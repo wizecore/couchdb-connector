@@ -5,13 +5,12 @@
 package org.mule.modules.couchdb;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import org.lightcouch.CouchDbClient;
-import org.lightcouch.NoDocumentException;
 import org.lightcouch.Response;
+import org.lightcouch.View;
 import org.mule.api.ConnectionException;
 import org.mule.api.ConnectionExceptionCode;
 import org.mule.api.annotations.Configurable;
@@ -26,6 +25,7 @@ import org.mule.api.annotations.param.ConnectionKey;
 import org.mule.api.annotations.param.Default;
 import org.mule.api.annotations.param.Optional;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
@@ -131,6 +131,40 @@ public class CouchDBConnector
     }
     
     /**
+     * Removes document from CouchDB by JSON or by id and optional revision.
+     * 
+     * {@sample.xml ../../../doc/couchdb-connector.xml.sample couchdb:remove}
+     * 
+     * @param document Document to delete. Must contain at least _id.
+     * @param idValue Id value, either this or document must be specified.
+     * @param revision Revision. Optional, if not specified, will be found last and deleted.
+     * @return JSON of specified document or last version in database.
+     * @throws IOException If error occurs
+     */
+    @Processor
+    public String remove(@Optional String document, @Optional String idValue, @Optional String revision) throws IOException {
+    	JsonObject json = null;
+    	if (document != null && document.trim().equals("") && document.startsWith("{")) {
+    		json = client.getGson().fromJson(document, JsonObject.class);
+    		if (json.has("_id")) {
+    			idValue = json.get("_id").getAsString();
+    		}
+    		if (json.has("_rev")) {
+    			revision = json.get("_rev").getAsString();
+    		}
+    	}
+    	
+    	if (revision == null || revision.trim().equals("")) {
+    		json = client.find(JsonObject.class, idValue);
+    		revision = json.get("_rev").getAsString();
+    	}
+    	
+    	Response r = client.remove(idValue, revision);
+    	checkResponse(r);
+    	return client.getGson().toJson(json);
+    }
+    
+    /**
      * Looks for object by specified id. If found, returns JSON, if not returns <code>defaultValue</code> JSON enriched with specified ID.
      * So one can use flow findById -> save without additional steps.
      * 
@@ -150,6 +184,63 @@ public class CouchDBConnector
     		o.addProperty("_id", idValue);
     		return client.getGson().toJson(o);
     	}
+    }
+    
+    /**
+     * Looks up document by key in view. If multiple entries found, returns first one. If no records found, 
+     * returns defaultValue.
+     * 
+     *  {@sample.xml ../../../doc/couchdb-connector.xml.sample couchdb:findByKey}
+     * 
+     * @param viewName View in form design/view-name.
+     * @param keyValue Key to look for. Required.
+     * @param defaultValue Default JSON to return if not found.
+     * @return Returns JSON of found document or default value if not found.
+     */
+    @Processor
+    public String findByKey(String viewName, String keyValue, @Optional String defaultValue) {
+    	View v = client.view(viewName).includeDocs(true);
+    	v.key(keyValue);
+    	List<JsonObject> list = v.query(JsonObject.class);
+    	if (list.size() == 0) {
+    		return defaultValue;
+    	} else {
+    		return client.getGson().toJson(list.get(0));
+    	}
+    }
+    
+    /**
+     * Query view specified in form design/view-name. Parameters keyValue and startKey/endKey are mutually exclusive.
+     * Limit by default is no limit.
+     * 
+     * {@sample.xml ../../../doc/couchdb-connector.xml.sample couchdb:listView}
+     * 
+     * @param viewName View in form design/view-name.
+     * @param keyValue Key to search for. Can be omitted to return all elements.
+     * @param startKey Start key to search for.
+     * @param endKey End key to search for.
+     * @param limit Limit number of entries returned. By default returns all.
+     * @return JSON array of elements found
+     */
+    @Processor
+    public String listView(String viewName, @Optional String keyValue, @Optional String startKey, @Optional String endKey, @Default("0") int limit) {
+    	View v = client.view(viewName).includeDocs(true);
+    	if (limit > 0) {
+    		v.limit(limit);
+    	}
+    	if (startKey != null && !startKey.trim().equals("")) {
+    		v.startKey(startKey);
+    	}
+    	if (endKey != null && !endKey.trim().equals("")) {
+    		v.endKey(endKey);
+    	}
+    	if (keyValue != null && !keyValue.trim().equals("")) {
+    		v.key(keyValue);
+    	}
+    	List<JsonObject> list = v.query(JsonObject.class);
+    	JsonArray a = new  JsonArray();
+    	for (JsonObject o: list) a.add(o);
+    	return client.getGson().toJson(a);
     }
     
     /**
