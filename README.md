@@ -7,7 +7,7 @@ Uses lightcouch library underneath (http://www.lightcouch.org).
 
 * __findById__ (find document by CouchDB id)
 * __listView__ (list documents in view, selecting by key or by range)
-* ___remove__ (removes document by CouchDB id or specified document)
+* __remove__ (removes document by CouchDB id or specified document)
 * __findByKey__ (finds document in view by key)
 * __save__ (adds or modifies existing document)
 
