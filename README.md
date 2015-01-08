@@ -5,11 +5,11 @@ Uses lightcouch library underneath (http://www.lightcouch.org).
 
 ## Supported operations:
 
-* *findById* (find document by CouchDB id)
-* *listView* (list documents in view, selecting by key or by range)
-* *remove* (removes document by CouchDB id or specified document)
-* *findByKey* (finds document in view by key)
-* *save* (adds or modifies existing document)
+* _findById_ (find document by CouchDB id)
+* _listView_ (list documents in view, selecting by key or by range)
+* _remove_ (removes document by CouchDB id or specified document)
+* _findByKey_ (finds document in view by key)
+* _save_ (adds or modifies existing document)
 
 # Mule supported versions
 
