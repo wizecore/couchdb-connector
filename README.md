@@ -1,12 +1,20 @@
 # CouchDB Anypoint Connector
 
-Allows query operations in CouchDB.
-Currently supports findById and save operations.
+Allows operations in Apache CouchDB (http://couchdb.apache.org).
 Uses lightcouch library underneath (http://www.lightcouch.org).
+
+## Supported operations:
+
+* findById (find document by CouchDB id)
+* listView (list documents in view, selecting by key or by range)
+* remove (removes document by CouchDB id or specified document)
+* findByKey (finds document in view by key)
+* save (adds or modifies existing document)
 
 # Mule supported versions
 
-Mule 3.5.X CE / EE
+Mule 3.5.X CE (tested)
+Other version may be supported.
 
 # CouchDB supported versions
 
