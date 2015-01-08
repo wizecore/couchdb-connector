@@ -19,18 +19,18 @@ For beta connectors you can download the source code.
 
 ## Source code installation: 
 
-1) Add devkit to Anypoint Studio
-2) Add project to Anypoint studio
-3) Right click on project, Anypoint Connector -> Install or update
-4) Restart studio when asked
-5) Use in your flows
+1. Add devkit to Anypoint Studio
+2. Add project to Anypoint studio
+3. Right click on project, Anypoint Connector -> Install or update
+4. Restart studio when asked
+5. Use in your flows
 
 ## Update site installation:
 
-1) Download update site from releases.
-2) Open Help -> Install new software and specify update site to install in studio
-3) Restart studio
-4) Use in your flows
+1. Download update site from releases.
+2. Open Help -> Install new software and specify update site to install in studio
+3. Restart studio
+4. Use in your flows
 
 ## Usage in standalone Mule ESB
 
