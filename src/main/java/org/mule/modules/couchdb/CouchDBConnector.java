@@ -5,6 +5,7 @@
 package org.mule.modules.couchdb;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,35 +43,35 @@ public class CouchDBConnector
 	 */
     @Configurable
     @Default("localhost")
-    private String hostname;
+    private String hostname = "localhost";
 
     /**
      * Protocol to connect with. Default is HTTP.
      */
     @Configurable
     @Default("http")
-    private String protocol;
+    private String protocol = "http";
 
     /**
      * CouchDB port. Default is 5984.
      */
     @Configurable
     @Default("5984")
-    private int port;
+    private int port = 5984;
     
     /**
      * Target database to operate on.
      */
     @Configurable
     @Default("test")
-    private String database;
+    private String database = "test";
     
     /**
      * Should we create (true) or fail (false) if target database does not exist? Default is true.
      */
     @Configurable
     @Default("true")
-    private boolean autoCreate;
+    private boolean autoCreate = true;
     
     /**
      * Private client
@@ -144,7 +145,7 @@ public class CouchDBConnector
     @Processor
     public String remove(@Optional String document, @Optional String idValue, @Optional String revision) throws IOException {
     	JsonObject json = null;
-    	if (document != null && document.trim().equals("") && document.startsWith("{")) {
+    	if (document != null && !document.trim().equals("") && document.startsWith("{")) {
     		json = client.getGson().fromJson(document, JsonObject.class);
     		if (json.has("_id")) {
     			idValue = json.get("_id").getAsString();
@@ -187,6 +188,24 @@ public class CouchDBConnector
     }
     
     /**
+     * Cast key based on content.
+     * @param keyValue
+     * @return
+     */
+    protected Object contentCast(String keyValue) {
+    	if (keyValue.matches("^[0-9]+$")) {
+    		Long l = Long.parseLong(keyValue);
+    		return l;
+    	} else 
+    	if (keyValue.matches("^[-]?[0-9]+\\.[0-9]+$")) {
+    		BigDecimal dec = new BigDecimal(keyValue);
+    		return dec;
+    	} else {
+    		return keyValue;
+    	}
+    }
+    
+    /**
      * Looks up document by key in view. If multiple entries found, returns first one. If no records found, 
      * returns defaultValue.
      * 
@@ -200,7 +219,9 @@ public class CouchDBConnector
     @Processor
     public String findByKey(String viewName, String keyValue, @Optional String defaultValue) {
     	View v = client.view(viewName).includeDocs(true);
-    	v.key(keyValue);
+    	v.key(contentCast(keyValue));
+    	v.reduce(false);
+    	
     	List<JsonObject> list = v.query(JsonObject.class);
     	if (list.size() == 0) {
     		return defaultValue;
@@ -229,13 +250,13 @@ public class CouchDBConnector
     		v.limit(limit);
     	}
     	if (startKey != null && !startKey.trim().equals("")) {
-    		v.startKey(startKey);
+    		v.startKey(contentCast(startKey));
     	}
     	if (endKey != null && !endKey.trim().equals("")) {
-    		v.endKey(endKey);
+    		v.endKey(contentCast(endKey));
     	}
     	if (keyValue != null && !keyValue.trim().equals("")) {
-    		v.key(keyValue);
+    		v.key(contentCast(keyValue));
     	}
     	List<JsonObject> list = v.query(JsonObject.class);
     	JsonArray a = new  JsonArray();
