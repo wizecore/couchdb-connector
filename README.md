@@ -1,12 +1,20 @@
 # CouchDB Anypoint Connector
 
-Allows query operations in CouchDB.
-Currently supports findById and save operations.
+Allows operations in Apache CouchDB (http://couchdb.apache.org).
 Uses lightcouch library underneath (http://www.lightcouch.org).
+
+## Supported operations:
+
+* __findById__ (find document by CouchDB id)
+* __listView__ (list documents in view, selecting by key or by range)
+* __remove__ (removes document by CouchDB id or specified document)
+* __findByKey__ (finds document in view by key)
+* __save__ (adds or modifies existing document)
 
 # Mule supported versions
 
-Mule 3.5.X CE / EE
+Mule 3.5.X CE (tested)
+Other version may be supported.
 
 # CouchDB supported versions
 
@@ -19,18 +27,18 @@ For beta connectors you can download the source code.
 
 ## Source code installation: 
 
-1) Add devkit to Anypoint Studio
-2) Add project to Anypoint studio
-3) Right click on project, Anypoint Connector -> Install or update
-4) Restart studio when asked
-5) Use in your flows
+1. Add devkit to Anypoint Studio
+2. Add project to Anypoint studio
+3. Right click on project, Anypoint Connector -> Install or update
+4. Restart studio when asked
+5. Use in your flows
 
 ## Update site installation:
 
-1) Download update site from releases.
-2) Open Help -> Install new software and specify update site to install in studio
-3) Restart studio
-4) Use in your flows
+1. Download update site from releases.
+2. Open Help -> Install new software and specify update site to install in studio
+3. Restart studio
+4. Use in your flows
 
 ## Usage in standalone Mule ESB
 
